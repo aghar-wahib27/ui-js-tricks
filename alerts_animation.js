@@ -40,7 +40,7 @@ class popUpComponent{
 	}
 }
 
-export class animatedPopUp {
+class animatedPopUp {
 	constructor (Parent) {
 		this.popUpParent = Parent
 		this.popUpElement = new popUpComponent('div',['pop-up'],Parent)
@@ -75,4 +75,5 @@ export class animatedPopUp {
 		this.popUpElement.htmlTag.querySelector('.popup-message').innerHTML = mes
 	}
 }
+
 
