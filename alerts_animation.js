@@ -1,3 +1,7 @@
+/* 
+instead of using the typical alert fucntion js provides
+you can use ``` animatedPopUp ``` , which you can customize more
+*/
 var popUpSign = {
 	'danger':'&#x26A0',
 	'success':'&#x2713',
@@ -21,12 +25,22 @@ var popUpStyling = {
 	'right':'20px'
 }
 
+/*
+ popUpChildren dictionary specifies the content of the pop up and thier classes ,  if you want
+ to customize the content of the pop up , you ``` MUST ``` write  
+ a children dictionary that follows this naming critera (index + element type) , so you avoid 
+ same key names , then pass it to children argument
+ */
+
 var popUpChildren = {
 	'1p':['popup-sign'],
 	'2p':['popup-message'],
 	'3button':['popup-close']
 }
 
+
+// the setStyle() method needs to be here then the animatedPopUp could inherit from it 
+// and to allow any element to style itself
 class popUpComponent{
 	constructor(type,classes,Parent){
 		this.htmlTag = document.createElement(type)
@@ -41,12 +55,12 @@ class popUpComponent{
 }
 
 class animatedPopUp {
-	constructor (Parent) {
+	constructor (Parent , children = popUpChildren , styling = popUpStyling) {
 		this.popUpParent = Parent
 		this.popUpElement = new popUpComponent('div',['pop-up'],Parent)
 		
-		Object.keys(popUpChildren).forEach((child)=>{
-			new popUpComponent( child.slice(1) , popUpChildren[child] , this.popUpElement.htmlTag )
+		Object.keys(children).forEach((child)=>{
+			new popUpComponent( child.slice(1) , children[child] , this.popUpElement.htmlTag )
 		})
 
 		this.popUpElement.htmlTag.querySelector('button').innerHTML = popUpSign['fail']
@@ -54,26 +68,35 @@ class animatedPopUp {
 			Parent.removeChild(this.popUpElement.htmlTag)
 
 		})
-		Object.keys(popUpStyling).forEach((style)=>{
-			this.popUpElement.htmlTag.style[style]=popUpStyling[style]
+		Object.keys(styling).forEach((style)=>{
+			this.popUpElement.htmlTag.style[style]=styling[style]
 		})
 
 	}
-	hideNotification(){
-		document.querySelector('body').removeChild(document.querySelector('.pop-up')) 
+	// From ES6/ES2015, default parameters are in the language specification.
+	hideNotification(duration = 5000){
+		setTimeout( function(){
+					document.querySelector('body').removeChild(document.querySelector('.pop-up'))
+					},
+				   duration
+				  ) 
 	}
-	setClass(newclass){
-		this.popUpElement.htmlTag.classList.add(newclass)
+	setClasses(new_classes=[]){
+		new_classes.forEach( (new_class)=>{
+			this.popUpElement.htmlTag.classList.add(new_class)
+		}
+		)
 	}
-	setStylingAndType(type,styleObj){
+	setStylingAndType(type = 'success' , styleObj={}){
 		Object.keys(styleObj).forEach((style)=>{
 			this.popUpElement.htmlTag.style[style] = styleObj[style]
 		})
 		this.popUpElement.htmlTag.querySelector('.popup-sign').innerHTML = popUpSign[type]
 	}
-	setMessage(mes){
+	setMessage(mes='default message'){
 		this.popUpElement.htmlTag.querySelector('.popup-message').innerHTML = mes
 	}
 }
+
 
 
